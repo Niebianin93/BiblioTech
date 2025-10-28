@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioTech - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex flex-col">
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">BiblioTech</h1>
+                <div class="space-x-4">
+                    <a href="/login" class="hover:underline">Login</a>
+                    <a href="/register" class="hover:underline">Register</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-4xl font-bold mb-4">Welcome to BiblioTech</h2>
+                <p class="text-xl mb-8 text-gray-700">Your modern library management system</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mt-12">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-bold text-lg mb-2">Browse Books</h3>
+                        <p class="text-gray-600">Explore our extensive catalog of books</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-bold text-lg mb-2">Easy Reservations</h3>
+                        <p class="text-gray-600">Reserve books quickly and easily</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-bold text-lg mb-2">Track Loans</h3>
+                        <p class="text-gray-600">Manage your borrowed books</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12">
+                    <a href="/register" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-gray-800 text-white p-4 mt-8">
+            <div class="container mx-auto text-center">
+                <p>&copy; 2024 BiblioTech. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+
+
