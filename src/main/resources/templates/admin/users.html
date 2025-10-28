@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - BiblioTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">BiblioTech</h1>
+            <div class="flex items-center space-x-4">
+                <a href="/dashboard" class="hover:underline">Dashboard</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="hover:underline bg-transparent border-none text-white cursor-pointer">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6">User Management</h2>
+        
+        <div th:if="${param.enabled}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            User enabled successfully!
+        </div>
+        
+        <div th:if="${param.roleChanged}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            User role changed successfully!
+        </div>
+        
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Username</th>
+                        <th class="px-6 py-3 text-left">Email</th>
+                        <th class="px-6 py-3 text-left">Enabled</th>
+                        <th class="px-6 py-3 text-left">Roles</th>
+                        <th class="px-6 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}" class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4" th:text="${user.username}"></td>
+                        <td class="px-6 py-4" th:text="${user.email}"></td>
+                        <td class="px-6 py-4">
+                            <span th:if="${user.enabled}" class="px-2 py-1 bg-green-200 text-green-800 rounded">Yes</span>
+                            <span th:if="${!user.enabled}" class="px-2 py-1 bg-red-200 text-red-800 rounded">No</span>
+                        </td>
+                        <td class="px-6 py-4" th:text="${user.roles}"></td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2 items-center">
+                                <form th:if="${!user.enabled}" 
+                                      th:action="@{/admin/users/enable/{id}(id=${user.id})}" 
+                                      method="post" style="display:inline;">
+                                    <button type="submit" class="text-green-600 hover:underline">Enable</button>
+                                </form>
+                                
+                                <form th:action="@{/admin/users/add-role/{id}(id=${user.id})}" 
+                                      method="post" class="flex gap-2 items-center">
+                                    <select name="role" class="px-3 py-1 border rounded">
+                                        <option value="ROLE_READER" th:selected="${user.roles.contains('ROLE_READER')}">Reader</option>
+                                        <option value="ROLE_LIBRARIAN" th:selected="${user.roles.contains('ROLE_LIBRARIAN')}">Librarian</option>
+                                        <option value="ROLE_ADMIN" th:selected="${user.roles.contains('ROLE_ADMIN')}">Admin</option>
+                                    </select>
+                                    <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                                        Change
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 flex justify-center gap-2" th:if="${totalPages > 1}">
+            <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/admin/users(page=${i})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? 'bg-blue-600 text-white' : 'bg-white'"
+               class="px-3 py-1 border rounded hover:bg-gray-100">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
