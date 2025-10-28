@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog - BiblioTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">BiblioTech</h1>
+            <div class="flex items-center space-x-4">
+                <a href="/dashboard" class="hover:underline">Dashboard</a>
+                <a href="/reader/reservations" class="hover:underline">My Reservations</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="hover:underline bg-transparent border-none text-white cursor-pointer">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6">Book Catalog</h2>
+        
+        <div th:if="${param.reserved}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Book reserved successfully!
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <form method="get" class="flex gap-4">
+                <input type="text" name="search" placeholder="Search books by title..." 
+                       class="flex-grow px-4 py-2 border rounded-lg">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                    Search
+                </button>
+            </form>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="book : ${books}" class="bg-white rounded-lg shadow p-6">
+                <h3 class="font-bold text-xl mb-2" th:text="${book.title}"></h3>
+                <p class="text-gray-600 mb-1">by <span th:text="${book.author}"></span></p>
+                <p class="text-gray-600 mb-1">ISBN: <span th:text="${book.isbn}"></span></p>
+                <p class="text-gray-600 mb-4">Available: <span th:text="${book.availableCopies}"></span> / <span th:text="${book.totalCopies}"></span></p>
+                
+                <form th:if="${book.availableCopies == 0}" 
+                      th:action="@{/reader/reserve/{bookId}(bookId=${book.id})}" 
+                      method="post">
+                    <button type="submit" 
+                            class="w-full bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                        Reserve
+                    </button>
+                </form>
+                
+                <div th:if="${book.availableCopies > 0}" 
+                     class="text-center text-green-600 font-bold">
+                    Available
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 flex justify-center gap-2" th:if="${totalPages > 1}">
+            <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/reader/catalog(page=${i})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? 'bg-blue-600 text-white' : 'bg-white'"
+               class="px-3 py-1 border rounded hover:bg-gray-100">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
