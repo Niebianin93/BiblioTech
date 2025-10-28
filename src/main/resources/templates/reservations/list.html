@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservations - BiblioTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">BiblioTech</h1>
+            <div class="flex items-center space-x-4">
+                <a href="/dashboard" class="hover:underline">Dashboard</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="hover:underline bg-transparent border-none text-white cursor-pointer">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6">All Reservations</h2>
+        
+        <div th:if="${param.confirmed}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Reservation confirmed!
+        </div>
+        
+        <div th:if="${param.cancelled}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Reservation cancelled!
+        </div>
+        
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Reader</th>
+                        <th class="px-6 py-3 text-left">Book</th>
+                        <th class="px-6 py-3 text-left">Reserved Date</th>
+                        <th class="px-6 py-3 text-left">Status</th>
+                        <th class="px-6 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reservation : ${reservations}" class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4" th:text="${reservation.readerProfile.firstName + ' ' + reservation.readerProfile.lastName}"></td>
+                        <td class="px-6 py-4" th:text="${reservation.book.title}"></td>
+                        <td class="px-6 py-4" th:text="${reservation.reservationDate}"></td>
+                        <td class="px-6 py-4">
+                            <span th:if="${reservation.status == 'PENDING'}" class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded">Pending</span>
+                            <span th:if="${reservation.status == 'AVAILABLE'}" class="px-2 py-1 bg-green-200 text-green-800 rounded">Available</span>
+                            <span th:if="${reservation.status == 'COMPLETED'}" class="px-2 py-1 bg-gray-200 text-gray-800 rounded">Completed</span>
+                            <span th:if="${reservation.status == 'CANCELLED'}" class="px-2 py-1 bg-red-200 text-red-800 rounded">Cancelled</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <form th:if="${reservation.status == 'AVAILABLE'}" 
+                                  th:action="@{/librarian/reservations/confirm/{id}(id=${reservation.id})}" 
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="text-green-600 hover:underline mr-2">Confirm Pickup</button>
+                            </form>
+                            <form th:if="${reservation.status == 'PENDING' || reservation.status == 'AVAILABLE'}" 
+                                  th:action="@{/librarian/reservations/cancel/{id}(id=${reservation.id})}" 
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="text-red-600 hover:underline">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 flex justify-center gap-2" th:if="${totalPages > 1}">
+            <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/librarian/reservations(page=${i})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? 'bg-blue-600 text-white' : 'bg-white'"
+               class="px-3 py-1 border rounded hover:bg-gray-100">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
