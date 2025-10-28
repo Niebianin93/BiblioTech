@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books - BiblioTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">BiblioTech</h1>
+            <div class="flex items-center space-x-4">
+                <a href="/dashboard" class="hover:underline">Dashboard</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="hover:underline bg-transparent border-none text-white cursor-pointer">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Books Management</h2>
+            <a href="/librarian/books/add" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Add New Book
+            </a>
+        </div>
+        
+        <div th:if="${param.success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Book added successfully!
+        </div>
+        
+        <div th:if="${param.updated}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Book updated successfully!
+        </div>
+        
+        <div th:if="${param.deleted}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Book deleted successfully!
+        </div>
+        
+        <div th:if="${param.error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            Error: <span th:text="${param.error}"></span>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <form method="get" class="flex gap-4">
+                <input type="text" name="search" placeholder="Search books..." 
+                       class="flex-grow px-4 py-2 border rounded-lg">
+                <select name="searchType" class="px-4 py-2 border rounded-lg">
+                    <option value="title">Title</option>
+                    <option value="author">Author</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                    Search
+                </button>
+            </form>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Title</th>
+                        <th class="px-6 py-3 text-left">Author</th>
+                        <th class="px-6 py-3 text-left">ISBN</th>
+                        <th class="px-6 py-3 text-left">Total</th>
+                        <th class="px-6 py-3 text-left">Available</th>
+                        <th class="px-6 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="book : ${books}" class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4" th:text="${book.title}"></td>
+                        <td class="px-6 py-4" th:text="${book.author}"></td>
+                        <td class="px-6 py-4" th:text="${book.isbn}"></td>
+                        <td class="px-6 py-4" th:text="${book.totalCopies}"></td>
+                        <td class="px-6 py-4" th:text="${book.availableCopies}"></td>
+                        <td class="px-6 py-4">
+                            <a th:href="@{/librarian/books/edit/{id}(id=${book.id})}" 
+                               class="text-blue-600 hover:underline mr-2">Edit</a>
+                            <form th:action="@{/librarian/books/delete/{id}(id=${book.id})}" 
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="text-red-600 hover:underline"
+                                        onclick="return confirm('Are you sure?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 flex justify-center gap-2" th:if="${totalPages > 1}">
+            <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/librarian/books(page=${i})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? 'bg-blue-600 text-white' : 'bg-white'"
+               class="px-3 py-1 border rounded hover:bg-gray-100">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
