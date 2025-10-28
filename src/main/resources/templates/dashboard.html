@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BiblioTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">BiblioTech</h1>
+            <div class="flex items-center space-x-4">
+                <span sec:authentication="name"></span>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="hover:underline bg-transparent border-none text-white cursor-pointer">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
+        
+        <div th:if="${param.error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            You don't have a reader profile. Only readers can access this section.
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div sec:authorize="hasAnyRole('READER', 'LIBRARIAN', 'ADMIN')" 
+                 class="bg-blue-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">My Profile</h3>
+                <p class="text-gray-700 mb-4">View your profile</p>
+                <a href="/reader/profile" class="text-blue-700 hover:underline font-bold">View Profile</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('READER', 'LIBRARIAN', 'ADMIN')" 
+                 class="bg-blue-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">Catalog</h3>
+                <p class="text-gray-700 mb-4">Browse available books</p>
+                <a href="/reader/catalog" class="text-blue-700 hover:underline font-bold">View Catalog</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('READER', 'LIBRARIAN', 'ADMIN')" 
+                 class="bg-blue-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">My Reservations</h3>
+                <p class="text-gray-700 mb-4">View your reservations</p>
+                <a href="/reader/reservations" class="text-blue-700 hover:underline font-bold">View Reservations</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('READER', 'LIBRARIAN', 'ADMIN')" 
+                 class="bg-blue-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">History</h3>
+                <p class="text-gray-700 mb-4">View your loan history</p>
+                <a href="/reader/profile/loans" class="text-blue-700 hover:underline font-bold">View History</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('LIBRARIAN', 'ADMIN')" 
+                 class="bg-green-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">Manage Books</h3>
+                <p class="text-gray-700 mb-4">Add, edit, delete books</p>
+                <a href="/librarian/books" class="text-green-700 hover:underline font-bold">Manage Books</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('LIBRARIAN', 'ADMIN')" 
+                 class="bg-green-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">Manage Loans</h3>
+                <p class="text-gray-700 mb-4">Handle book loans</p>
+                <a href="/librarian/loans" class="text-green-700 hover:underline font-bold">Manage Loans</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('LIBRARIAN', 'ADMIN')" 
+                 class="bg-green-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">Reservations</h3>
+                <p class="text-gray-700 mb-4">Manage reservations</p>
+                <a href="/librarian/reservations" class="text-green-700 hover:underline font-bold">View Reservations</a>
+            </div>
+            
+            <div sec:authorize="hasAnyRole('LIBRARIAN', 'ADMIN')" 
+                 class="bg-green-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">Reader Management</h3>
+                <p class="text-gray-700 mb-4">Manage reader profiles</p>
+                <a href="/admin/readers" class="text-green-700 hover:underline font-bold">Manage Readers</a>
+            </div>
+            
+            <div sec:authorize="hasRole('ADMIN')" 
+                 class="bg-purple-100 p-6 rounded shadow">
+                <h3 class="font-bold text-lg mb-2">User Management</h3>
+                <p class="text-gray-700 mb-4">Manage users and roles</p>
+                <a href="/admin/users" class="text-purple-700 hover:underline font-bold">Manage Users</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
