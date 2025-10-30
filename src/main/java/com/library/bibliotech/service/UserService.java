@@ -5,7 +5,6 @@ import com.library.bibliotech.model.User;
 import com.library.bibliotech.repository.ReaderProfileRepository;
 import com.library.bibliotech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,44 +41,32 @@ public class UserService {
             throw new RuntimeException("Email already exists");
         }
         
-        try {
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(password));
-            user.setEnabled(false);
-            
-            String activationToken = UUID.randomUUID().toString();
-            user.setActivationToken(activationToken);
-            
-            Set<String> roles = new HashSet<>();
-            roles.add("ROLE_READER");
-            user.setRoles(roles);
-            
-            user = userRepository.save(user);
-            
-            ReaderProfile profile = new ReaderProfile();
-            profile.setUser(user);
-            profile.setFirstName(firstName);
-            profile.setLastName(lastName);
-            profile.setPhoneNumber(phone);
-            profile.setLibraryCardNumber(generateCardNumber());
-            profile.setLoanLimit(5);
-            readerProfileRepository.save(profile);
-            
-            emailService.sendRegistrationConfirmation(email, username, activationToken);
-            
-            return user;
-        } catch (DataIntegrityViolationException e) {
-            String msg = e.getMessage();
-            if (msg != null && msg.contains("username")) {
-                throw new RuntimeException("Username already exists");
-            } else if (msg != null && msg.contains("email")) {
-                throw new RuntimeException("Email already exists");
-            } else {
-                throw new RuntimeException("Registration failed - duplicate entry");
-            }
-        }
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEnabled(false);
+        
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_READER");
+        user.setRoles(roles);
+        
+        String activationToken = UUID.randomUUID().toString();
+        user.setActivationToken(activationToken);
+        user = userRepository.save(user);
+        
+        ReaderProfile profile = new ReaderProfile();
+        profile.setUser(user);
+        profile.setFirstName(firstName);
+        profile.setLastName(lastName);
+        profile.setPhoneNumber(phone);
+        profile.setLibraryCardNumber(generateCardNumber());
+        profile.setLoanLimit(5);
+        readerProfileRepository.save(profile);
+        
+        emailService.sendRegistrationConfirmation(email, username, activationToken);
+        
+        return user;
     }
     
     private String generateCardNumber() {
@@ -93,7 +80,7 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-    
+
     public Page<User> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
@@ -123,16 +110,29 @@ public class UserService {
             userRepository.save(user);
         }
     }
-    
+
     public void setRole(Long userId, String role) {
         Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            Set<String> newRoles = new HashSet<>();
-            newRoles.add(role);
-            user.setRoles(newRoles);
-            userRepository.save(user);
+        if (userOpt.isEmpty()) {
+            return;
         }
+        User user = userOpt.get();
+        String normalized = normalizeRole(role);
+        Set<String> newRoles = new HashSet<>();
+        newRoles.add(normalized);
+        user.setRoles(newRoles);
+        userRepository.save(user);
+    }
+
+    private String normalizeRole(String role) {
+        if (role == null || role.isBlank()) {
+            return "ROLE_READER";
+        }
+        String trimmed = role.trim().toUpperCase();
+        if (!trimmed.startsWith("ROLE_")) {
+            trimmed = "ROLE_" + trimmed;
+        }
+        return trimmed;
     }
     
     public void removeRole(Long userId, String role) {
@@ -143,21 +143,21 @@ public class UserService {
             userRepository.save(user);
         }
     }
-    
+
     public void updateUser(User user) {
         userRepository.save(user);
     }
-    
+
     public boolean activateUser(String token) {
         Optional<User> userOpt = userRepository.findByActivationToken(token);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            user.setEnabled(true);
-            user.setActivationToken(null);
-            userRepository.save(user);
-            return true;
+        if (userOpt.isEmpty()) {
+            return false;
         }
-        return false;
+        User user = userOpt.get();
+        user.setEnabled(true);
+        user.setActivationToken(null);
+        userRepository.save(user);
+        return true;
     }
 }
 
