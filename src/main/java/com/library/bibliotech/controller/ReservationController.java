@@ -3,7 +3,6 @@ package com.library.bibliotech.controller;
 import com.library.bibliotech.model.ReaderProfile;
 import com.library.bibliotech.model.Reservation;
 import com.library.bibliotech.model.User;
-import com.library.bibliotech.service.BookService;
 import com.library.bibliotech.service.ReaderProfileService;
 import com.library.bibliotech.service.ReservationService;
 import com.library.bibliotech.service.UserService;
@@ -30,10 +29,7 @@ public class ReservationController {
     private ReaderProfileService readerProfileService;
     
     @Autowired
-    private UserService userService;
-    
-    @Autowired
-    private BookService bookService;
+    private UserService userService;  
     
     @GetMapping("/reader/reservations")
     public String listMyReservations(Authentication auth, Model model) {

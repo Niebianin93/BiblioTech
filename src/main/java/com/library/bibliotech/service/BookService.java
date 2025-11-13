@@ -71,7 +71,6 @@ public class BookService {
     public void deleteBook(Long id) {
         Optional<Book> bookOpt = bookRepository.findById(id);
         if (bookOpt.isPresent()) {
-            Book book = bookOpt.get();
             List<Loan> activeLoans = loanRepository.findByBookIdAndStatus(id, "ACTIVE");
             List<Reservation> activeReservations = reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(id, "PENDING");
             

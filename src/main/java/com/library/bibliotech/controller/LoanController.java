@@ -1,7 +1,6 @@
 package com.library.bibliotech.controller;
 
 import com.library.bibliotech.model.Loan;
-import com.library.bibliotech.model.ReaderProfile;
 import com.library.bibliotech.service.BookService;
 import com.library.bibliotech.service.LoanService;
 import com.library.bibliotech.service.ReaderProfileService;
